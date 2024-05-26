@@ -1,5 +1,5 @@
 import User from "../models/User";
-import { LoginData, UserData, UserPayload } from "../types/user";
+import { LoginData, RegisterData, UserPayload } from "../types/user";
 import {
 	encryptPassword,
 	generateToken,
@@ -9,7 +9,7 @@ import { CODE } from "../utils/constants";
 import { HttpException } from "../utils/HttpException";
 
 class UserService {
-	public findByEmail = async (email: UserData["email"]) => {
+	public findByEmail = async (email: RegisterData["email"]) => {
 		const user = User.findOne({ email });
 
 		if (!user) {
@@ -19,7 +19,7 @@ class UserService {
 		return user;
 	};
 
-	public register = async (data: UserData) => {
+	public register = async (data: RegisterData) => {
 		const user = await this.findByEmail(data.email);
 
 		if (user) {
@@ -49,6 +49,16 @@ class UserService {
 		const payload: UserPayload = { email: user.email, name: user.name };
 
 		return generateToken(payload);
+	};
+
+	public getAll = async () => {
+		const users = await User.find({}).populate("Link");
+
+		if (users.length === 0) {
+			throw new HttpException(CODE.NOT_FOUND, "No hay usuarios a mostrar");
+		}
+
+		return users;
 	};
 }
 

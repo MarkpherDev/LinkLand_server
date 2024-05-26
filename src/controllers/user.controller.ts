@@ -25,4 +25,15 @@ export class UserController {
 			errorMessage(res, error);
 		}
 	};
+
+	static getAll = async (req: Request, res: Response) => {
+		try {
+			const response = await UserService.getAll();
+			res
+				.status(CODE.OK)
+				.json({ data: response, message: "Usuarios encontrados" });
+		} catch (error) {
+			errorMessage(res, error);
+		}
+	};
 }
